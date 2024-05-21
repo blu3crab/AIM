@@ -23,7 +23,51 @@ import pickle
 import numpy as np
 import pandas as pd
 
+################################################################
+# read groundtruth file, strip & generate word list plus word string
+import re
 
+groundtruth_path = '/content/gdrive/MyDrive/AIM/citizen_1864_groundtruth_annotated.txt'
+
+def read_and_process_file(filename):
+    """Reads a text file, processes the words, and returns a list of words."""
+
+    with open(filename, 'r') as file:
+        text = file.read()
+
+    # Check and remove BOM if present using slicing
+    if text.startswith('\ufeff'):
+        text = text[1:]  # Remove the first character if it's "\ufeff"
+
+    # Replace spaces, commas, newlines, and underscores with spaces
+    text = re.sub(r'[ ,_\n]+', ' ', text)
+
+    # Create a list of words
+    word_list = text.split()
+
+    return word_list
+
+
+# Read and process the two files
+groundtruth_list = read_and_process_file(groundtruth_path)
+groundtruth_string = str(groundtruth_list)
+
+groundtruth_string_lower = groundtruth_string.lower()
+groundtruth_list_lower = [x.lower() for x in groundtruth_list]
+
+# Print the lists
+print("Ground Truth list:", groundtruth_list)
+print("Ground Truth string:", groundtruth_string)
+print("Ground Truth list (lower):", groundtruth_list_lower)
+print("Ground Truth string (lower):", groundtruth_string_lower)
+
+# write word list and word string
+base_name = 'citizen_1864_groundtruth'
+aim_util.write_text(str(groundtruth_list), "/content/gdrive/MyDrive/AIM/" + base_name + "_word_list.txt")
+aim_util.write_text(groundtruth_string, "/content/gdrive/MyDrive/AIM/" + base_name + "_word_string.txt")
+aim_util.write_text(str(groundtruth_list_lower), "/content/gdrive/MyDrive/AIM/" + base_name + "_word_list_lower.txt")
+aim_util.write_text(groundtruth_string_lower, "/content/gdrive/MyDrive/AIM/" + base_name + "_word_string_lower.txt")
+################################################################
 def preds_to_pd(predictions):
     data_list = []
 
