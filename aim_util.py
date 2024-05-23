@@ -41,6 +41,7 @@ def mount_gdrive(gdrive_path="'content/gdrive/", image_path="MyDrive/ha-image/or
 # sys.path.append('/content/gdrive/MyDrive/AIM')
 # !ls -l /content/gdrive/MyDrive/AIM
 # import aim_util
+# import aim_xform
 ###############################################################################
 # write panda dataframe to pickle file
 # read panda dataframe to pickle file
