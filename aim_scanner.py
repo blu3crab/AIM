@@ -13,13 +13,14 @@ import aim_util
 # keras OCR
 # !pip install keras_ocr
 
+###############################################################################
 def get_pipeline():
     pipeline_OCR = keras_ocr.pipeline.Pipeline()
     return pipeline_OCR
 
+###############################################################################
 def Detect(image_path,pipeline):
     """OCR for text detection"""
-
 
     # Read in image path
     read_image = keras_ocr.tools.read(image_path)
@@ -27,12 +28,12 @@ def Detect(image_path,pipeline):
     prediction_groups = pipeline.recognize([read_image])
     return prediction_groups[0]
 
+###############################################################################
 def Distance(predictions):
     """
     Returns dictionary with (key,value):
 
     """
-
     # Point of origin
     x0, y0 = 0, 0
     # Generate dictionary
@@ -54,10 +55,15 @@ def Distance(predictions):
                           'center_x':center_x,
                           'center_y':center_y,
                           'distance_from_origin':distance_from_origin,
-                          'distance_y':distance_y
+                          'distance_y':distance_y,
+                          'top_left_x': top_left_x,
+                          'top_left_y': top_left_y,
+                          'bottom_right_x': bottom_right_x,
+                          'bottom_right_y': bottom_right_y,
                       })
     return detections
 
+###############################################################################
 def distinguish_rows(lst, thresh):
     """Function to help distinguish unique rows"""
 
@@ -72,66 +78,96 @@ def distinguish_rows(lst, thresh):
             sublists = [lst[i+1]]
     yield sublists
 
-
-def OCR(image_path, pipeline, order='yes',thresh=6):
+###############################################################################
+def OCR(image_path, pipeline, trim_length=1, order='yes', thresh=6):
     """
     Function returns predictions in human readable order
     from left to right & top to bottom
     """
-    ordered_preds = []
-    predictions = Detect(image_path, pipeline)
-    print(f"predictions (raw)->{predictions}")
-    predictions_2 = Distance(predictions)
-    print(f"predictions_2->{predictions_2}")
+    ordered_word_list = []
+    ordered_word_list_with_newline = []
+
+    predictions_raw = Detect(image_path, pipeline)
+    #print(f"predictions (raw)->{predictions_raw}")
+    predictions_2 = Distance(predictions_raw)
+    #print(f"predictions_2->{predictions_2}")
     longitud=len(predictions_2)
     if longitud==1:
-        ordered_preds = predictions_2[0]['text']
+        ordered_word_string = predictions_2[0]['text']
     else:
 
         predictions_3 = list(distinguish_rows(predictions_2, thresh))
-        print(f"predictions_3->{predictions_3}")
+        #print(f"predictions_3->{predictions_3}")
         # Remove all empty rows
         predictions_3_f = list(filter(lambda x:x!=[], predictions_3))
-        print(f"predictions_3_f->{predictions_3_f}")
+        #print(f"predictions_3_f->{predictions_3_f}")
         # Order text detections in human readable format
 
-        breakout = False
+        pred_sort_dist = []
+        #breakout = False
         ylst = ['yes', 'y']
         for pr in predictions_3_f:
-            print(f"pr->{pr}")
+            #print(f"pr->{pr}")
             if order in ylst:
                 row = sorted(pr, key=lambda x:x['distance_from_origin'])
-                print(f"row->{row}")
+                #print(f"sorted row->{row}")
+                row_added = False
                 for each in row:
-                    ordered_preds.append(each['text'])
-                    print(f"each->{each}, each-text->{each['text']}")
-                    breakout = True
-                    if breakout:
-                        break
-        #print(f"ordered_preds->{ordered_preds}")
+                    if len(each['text']) > trim_length:
+                        ordered_word_list.append(each['text'])
+                        ordered_word_list_with_newline.append(each['text'])
+                        #print(f"each->{each}, each-text->{each['text']}")
 
-    with open('texto.txt','a+') as f:
-        for word in ordered_preds:
-            f.write(word+' ')
-        text=''
-    for word in ordered_preds:
-        text=text+' '+word
+                        # append bbox preds
+                        pred_sort_dist.append([each['text'], each['center_x'],each['center_y'],each['distance_from_origin'],each['distance_y'],each['top_left_x'],each['top_left_y'],each['bottom_right_x'],each['bottom_right_y']])
+                        row_added = True
+                if row_added:
+                    ordered_word_list_with_newline.append("\n")
+                # breakout = True
+                # if breakout:
+                #     break
+        #print(pred_sort_dist)
+        #print(f"ordered_word_string->{ordered_word_string}")
 
-    #print(f"text->{text}")
-    return predictions, ordered_preds, text
+    print(f"ordered_word_list->{ordered_word_list}")
+    print(f"ordered_word_list_with_newline->{ordered_word_list_with_newline}")
+
+    # with open('texto.txt','a+') as f:
+    #     for word in ordered_word_list:
+    #         f.write(word + ' ')
+    # word_list = ''
+    ordered_word_string = ""
+    ordered_word_string_with_newline =""
+    for word in ordered_word_list:
+        ordered_word_string = ordered_word_string + ' ' + word
+    for word in ordered_word_list_with_newline:
+        ordered_word_string_with_newline = ordered_word_string_with_newline + ' ' + word
+
+    #print(f"ordered_preds_with_newline->{ordered_preds_with_newline}")
+    return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, ordered_word_list
+
 ###############################################################################
-def preds_to_pd(predictions):
+def pred_to_pd(predictions, raw=True):
     data_list = []
 
-    for word, coords in predictions:
-        upper_left_X, upper_left_Y, lower_left_X, lower_left_Y, lower_right_X, lower_right_Y, upper_right_X, upper_right_Y = coords.flatten()
-        data_list.append([word, upper_left_X, upper_left_Y, lower_left_X, lower_left_Y, lower_right_X, lower_right_Y, upper_right_X, upper_right_Y])
+    if raw:
+        for word, coords in predictions:
+            upper_left_X, upper_left_Y, lower_left_X, lower_left_Y, lower_right_X, lower_right_Y, upper_right_X, upper_right_Y = coords.flatten()
+            data_list.append([word, upper_left_X, upper_left_Y, lower_left_X, lower_left_Y, lower_right_X, lower_right_Y, upper_right_X, upper_right_Y])
 
-    df = pd.DataFrame(data_list, columns=['word', 'UL_X', 'UL_Y', 'LL_X', 'LL_Y', 'LR_X', 'LR_Y', 'UR_X', 'UR_Y'])
-    df = df.astype({col: np.float32 for col in df.columns[1:]})
+        df = pd.DataFrame(data_list, columns=['word', 'UL_X', 'UL_Y', 'LL_X', 'LL_Y', 'LR_X', 'LR_Y', 'UR_X', 'UR_Y'])
+        df = df.astype({col: np.float32 for col in df.columns[1:]})
+    else:
+        for word, center_x, center_y, distance_from_origin, distance_y, top_left_x, top_left_y, bottom_right_x, bottom_right_y in predictions:
+            data_list.append([word, center_x, center_y, distance_from_origin, distance_y, top_left_x, top_left_y, bottom_right_x, bottom_right_y])
 
+        df = pd.DataFrame(data_list, columns=['word', 'CENTER_X', 'CENTER_Y', 'DIST_ORIGEN', 'DIST_Y', 'UL_X', 'UL_Y', 'LR_X', 'LR_Y'])
+        df = df.astype({col: np.float32 for col in df.columns[1:]})
+
+    #print(df.head())
     return df
 
+###############################################################################
 def write_to_pickle(df, path):
     """Write the DataFrame to a Pickle file (*.pkl) at the specified path"""
     with open(path, 'wb') as f:
@@ -143,17 +179,23 @@ def read_from_pickle(path):
     with open(path, 'rb') as f:
         return pickle.load(f)
 
-def write_preds_fileset(predictions, ordered_preds, word_preds, gdrive_path, base_name):
-    aim_util.write_text(str(ordered_preds), gdrive_path + base_name + "_word_list.txt")
-    aim_util.write_text(word_preds, gdrive_path + base_name + "_word_string.txt")
-
-    preds_df = preds_to_pd(predictions)
-
-    pickle_path = gdrive_path + base_name + "_bbox.pkl"
-    write_to_pickle(preds_df, pickle_path)
 ###############################################################################
-def test_preds_to_pickle(predictions, gdrive_path, base_name):
-    preds_df = preds_to_pd(predictions)
+def write_preds_fileset(predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list, gdrive_path, base_name):
+
+    pred_raw_df = pred_to_pd(predictions_raw, raw=True)
+    pickle_path = gdrive_path + base_name + "_raw_bbox.pkl"
+    write_to_pickle(pred_raw_df, pickle_path)
+
+    pred_sort_dist_df = pred_to_pd(pred_sort_dist, raw=False)
+    pickle_path = gdrive_path + base_name + "_sort_dist_bbox.pkl"
+    write_to_pickle(pred_sort_dist_df, pickle_path)
+
+    aim_util.write_text(ordered_word_string, gdrive_path + base_name + "_word_string.txt")
+    aim_util.write_text(ordered_word_string_with_newline, gdrive_path + base_name + "_newline_word_string.txt")
+    aim_util.write_text(str(word_list), gdrive_path + base_name + "_word_list.txt")
+###############################################################################
+def test_preds_to_pickle(predictions, gdrive_path, base_name, raw=True):
+    preds_df = pred_to_pd(predictions, raw)
     print(f"gen preds->{preds_df.head()}")
 
     pickle_path = gdrive_path + base_name + "_bbox.pkl"
