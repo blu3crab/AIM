@@ -33,7 +33,7 @@ def mount_gdrive(gdrive_path="'content/gdrive/", image_path="MyDrive/ha-image/or
 # from google.colab import files
 # files.download(filename)
 ###############################################################################
-# mount gdrive, add dir of interest to path, import gdrive python file
+# mount gdrive, add dir of interest to path, import gdrive python file(s)
 #
 # from google.colab import drive
 # import sys
@@ -41,7 +41,7 @@ def mount_gdrive(gdrive_path="'content/gdrive/", image_path="MyDrive/ha-image/or
 # sys.path.append('/content/gdrive/MyDrive/AIM')
 # !ls -l /content/gdrive/MyDrive/AIM
 # import aim_util
-# import aim_xform
+# import aim_xformer
 ###############################################################################
 # write panda dataframe to pickle file
 # read panda dataframe to pickle file

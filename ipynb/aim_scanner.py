@@ -80,42 +80,35 @@ def OCR(image_path, pipeline, order='yes',thresh=6):
     """
     ordered_preds = []
     predictions = Detect(image_path, pipeline)
-    print(f"predictions (raw)->{predictions}")
+    #print(f"predictions (raw)->{predictions}")
     predictions_2 = Distance(predictions)
-    print(f"predictions_2->{predictions_2}")
+    #print(f"predictions_2->{predictions_2}")
     longitud=len(predictions_2)
-    if longitud==1:
-        ordered_preds = predictions_2[0]['text']
+    if longitud==1: ordered_preds= predictions_2[0]['text']
     else:
 
-        predictions_3 = list(distinguish_rows(predictions_2, thresh))
-        print(f"predictions_3->{predictions_3}")
-        # Remove all empty rows
-        predictions_3_f = list(filter(lambda x:x!=[], predictions_3))
-        print(f"predictions_3_f->{predictions_3_f}")
-        # Order text detections in human readable format
+      predictions_3 = list(distinguish_rows(predictions_2, thresh))
+      #print(f"predictions_3->{predictions_3}")
+      # Remove all empty rows
+      predictions_3_f = list(filter(lambda x:x!=[], predictions_3))
+      #print(f"predictions_3_f->{predictions_3_f}")
+      # Order text detections in human readable format
 
-        breakout = False
-        ylst = ['yes', 'y']
-        for pr in predictions_3_f:
-            print(f"pr->{pr}")
-            if order in ylst:
-                row = sorted(pr, key=lambda x:x['distance_from_origin'])
-                print(f"row->{row}")
-                for each in row:
-                    ordered_preds.append(each['text'])
-                    print(f"each->{each}, each-text->{each['text']}")
-                    breakout = True
-                    if breakout:
-                        break
-        #print(f"ordered_preds->{ordered_preds}")
+      ylst = ['yes', 'y']
+      for pr in predictions_3_f:
+          if order in ylst:
+              row = sorted(pr, key=lambda x:x['distance_from_origin'])
+              for each in row:
+                  ordered_preds.append(each['text'])
+    #print(f"ordered_preds->{ordered_preds}")
 
     with open('texto.txt','a+') as f:
-        for word in ordered_preds:
-            f.write(word+' ')
-        text=''
+      for word in ordered_preds:
+        f.write(word+' ')
+    text=''
     for word in ordered_preds:
-        text=text+' '+word
+
+      text=text+' '+word
 
     #print(f"text->{text}")
     return predictions, ordered_preds, text
