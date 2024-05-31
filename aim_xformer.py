@@ -18,7 +18,7 @@ def grayscale(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # applying thresholding
-def threshold(img, thresh_val=127):
+def threshold(img, thresh_val=127, thresh_type=cv2.THRESH_BINARY):
     ret, thresh = cv2.threshold(img, thresh_val, 255, cv2.THRESH_BINARY)
     return thresh
 
@@ -77,6 +77,64 @@ def trial_xform(image_path):
         # save_image_name = '/content/gdrive/MyDrive/AIM/citizen_xform_' + str(i) + '.jpg'
         # plt.savefig(save_image_name)
     plt.show()
+###############################################################################
+def trial_xform_threshold(gdrive_path, image_path):
+    # read image
+    img = mpimg.imread(image_path)
+
+    transformed_images = []
+    # try varying key input Laplacian parameters: threshold value, type
+    thresh_img = threshold(img)
+    transformed_images.append(thresh_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform2a.jpg'), thresh_img)
+    thresh_img = threshold(img, thresh_val=50)
+    transformed_images.append(thresh_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform2b.jpg'), thresh_img)
+    thresh_img = threshold(img, thresh_val=200, thresh_type=cv2.THRESH_BINARY_INV)
+    transformed_images.append(thresh_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform2c.jpg'), thresh_img)
+    thresh_img = threshold(img, thresh_val=127, thresh_type=cv2.THRESH_TRUNC)
+    transformed_images.append(thresh_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform2d.jpg'), thresh_img)
+    thresh_img = threshold(img, thresh_val=75, thresh_type=cv2.THRESH_TOZERO_INV)
+    transformed_images.append(thresh_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform2e.jpg'), thresh_img)
+    thresh_img = threshold(img, thresh_val=170, thresh_type=cv2.THRESH_OTSU)
+    transformed_images.append(thresh_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform2f.jpg'), thresh_img)
+
+    # Display the images side by side
+    for i in range(0, len(transformed_images)):
+        plt.subplot(1, len(transformed_images), i + 1)
+        plt.title("Transform " + str(i + 1))
+        plt.imshow(transformed_images[i], cmap='gray')
+        plt.axis('off')
+    plt.show()
+###############################################################################
+def trial_xform_sharpen(gdrive_path, image_path):
+    # read image
+    img = mpimg.imread(image_path)
+
+    transformed_images = []
+    # vary sharpen kernal sze
+    sharpened_img = sharpen(img, 5)
+    transformed_images.append(sharpened_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform4a.jpg'), sharpened_img)
+    sharpened_img = sharpen(img, 11)
+    transformed_images.append(sharpened_img)
+    cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform4b.jpg'), sharpened_img)
+
+    # Display the images side by side
+    for i in range(0, len(transformed_images)):
+        plt.subplot(1, len(transformed_images), i + 1)
+        plt.title("Transform " + str(i + 1))
+        plt.imshow(transformed_images[i], cmap='gray')
+        plt.axis('off')
+        # save_image_name = '/content/gdrive/MyDrive/AIM/citizen_xform_' + str(i) + '.jpg'
+        # plt.savefig(save_image_name)
+    plt.show()
+
+
 ###############################################################################
 # apply grayscale multiple times with varying intensity
 # image_path = '/content/gdrive/MyDrive/AIM/citizen_1864_rescan.jpg'

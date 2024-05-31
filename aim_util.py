@@ -39,6 +39,7 @@ def mount_gdrive(gdrive_path="'content/gdrive/", image_path="MyDrive/ha-image/or
 # import sys
 # drive.mount('/content/gdrive')
 # sys.path.append('/content/gdrive/MyDrive/AIM')
+# gdrive_path = '/content/gdrive/MyDrive/AIM'
 # !ls -l /content/gdrive/MyDrive/AIM
 # import aim_util
 # import aim_xformer
