@@ -7,7 +7,12 @@ import pandas as pd
 import keras_ocr
 import math
 
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
 import aim_util
+
+gdrive_path = '/content/gdrive/MyDrive/AIM/'
 
 ###############################################################################
 # keras OCR
@@ -19,7 +24,8 @@ def get_pipeline():
     return pipeline_OCR
 
 ###############################################################################
-def Detect(image_path,pipeline):
+###############################################################################
+def Detect(image_path, pipeline):
     """OCR for text detection"""
 
     # Read in image path
@@ -38,11 +44,13 @@ def Distance(predictions):
     x0, y0 = 0, 0
     # Generate dictionary
     detections = []
+    # trace_count = 0
     for group in predictions:
 
         # Get center point of bounding box
       top_left_x, top_left_y = group[1][0]
-      bottom_right_x, bottom_right_y = group[1][1]
+      #bottom_right_x, bottom_right_y = group[1][1]
+      bottom_right_x, bottom_right_y = group[1][2]
       center_x = (top_left_x + bottom_right_x) / 2
       center_y = (top_left_y + bottom_right_y) / 2
       # Use the Pythagorean Theorem to solve for distance from origin
@@ -61,6 +69,10 @@ def Distance(predictions):
                           'bottom_right_x': bottom_right_x,
                           'bottom_right_y': bottom_right_y,
                       })
+      # if trace_count < 4:
+      #   print(f"{group}")
+      #   print(f"top_left_x, top_left_y->{top_left_x}, {top_left_y}--bottom_right_x, bottom_right_y->{bottom_right_x}, {bottom_right_y}")
+      #   trace_count = trace_count + 1
     return detections
 
 ###############################################################################
@@ -101,8 +113,8 @@ def OCR(image_path, pipeline, trim_length=1, order='yes', thresh=6):
         # Remove all empty rows
         predictions_3_f = list(filter(lambda x:x!=[], predictions_3))
         #print(f"predictions_3_f->{predictions_3_f}")
-        # Order text detections in human readable format
 
+        # Order text detections in human-readable format
         pred_sort_dist = []
         #breakout = False
         ylst = ['yes', 'y']
@@ -145,8 +157,19 @@ def OCR(image_path, pipeline, trim_length=1, order='yes', thresh=6):
 
     #print(f"ordered_preds_with_newline->{ordered_preds_with_newline}")
     return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, ordered_word_list
-
 ###############################################################################
+def predict(gdrive_path, transform_basename_list, pipeline):
+    for base_name in transform_basename_list:
+        image_path = gdrive_path + base_name + ".jpg"
+        img = mpimg.imread(image_path)
+        plt.imshow(img)
+        print(f"scanning {image_path}")
+        predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list = OCR(image_path, pipeline, order='yes', thresh=16)
+        write_preds_fileset(predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list, gdrive_path, base_name)
+
+        return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list
+###############################################################################
+
 def pred_to_pd(predictions, raw=True):
     data_list = []
 

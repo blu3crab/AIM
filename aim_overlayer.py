@@ -8,4 +8,4 @@ from PIL import Image, ImageDraw, ImageFont
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-%matplotlib inline
+# %matplotlib inline

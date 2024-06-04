@@ -38,11 +38,14 @@ def mount_gdrive(gdrive_path="'content/gdrive/", image_path="MyDrive/ha-image/or
 # from google.colab import drive
 # import sys
 # drive.mount('/content/gdrive')
-# sys.path.append('/content/gdrive/MyDrive/AIM')
 # gdrive_path = '/content/gdrive/MyDrive/AIM'
-# !ls -l /content/gdrive/MyDrive/AIM
+# sys.path.append(gdrive_path)
+# !ls -l /content/gdrive/MyDrive/AIM/*.py
+# import aim_tuner
 # import aim_util
 # import aim_xformer
+# import aim_scanner
+# import aim_overlayer
 ###############################################################################
 # write panda dataframe to pickle file
 # read panda dataframe to pickle file
