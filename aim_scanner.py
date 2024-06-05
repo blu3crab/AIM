@@ -167,7 +167,7 @@ def predict(gdrive_path, transform_basename_list, pipeline):
         predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list = OCR(image_path, pipeline, order='yes', thresh=16)
         write_preds_fileset(predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list, gdrive_path, base_name)
 
-        return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list
+    return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list
 ###############################################################################
 
 def pred_to_pd(predictions, raw=True):
