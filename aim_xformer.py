@@ -184,7 +184,7 @@ def apply_xform_noise(gdrive_path, image_path, source_base, xform_prefix):
 
     transformed_images = []
     # vary noise kernal size
-    noise_img = noise_reduction(img, 3) # default
+    noise_img = noise_reduction(img, 3) # default 5
     transformed_images.append(noise_img)
     cv2.imwrite(os.path.join(gdrive_path, source_base + xform_prefix + 'a.jpg'), noise_img)
 
