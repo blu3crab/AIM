@@ -53,10 +53,10 @@ tuner = SimpleNamespace(
     noise_kernel_size_D=31,     # 2.86
 
     # XFORM4 = "Sharpen"
-    sharpen_kernel_size_A=3,    # xform3a with top percent->79.30
-    sharpen_kernel_size_B=7,    # 77.31
-    sharpen_kernel_size_C=21,   # 45.59
-    sharpen_kernel_size_D=31,   # 2.86
+    sharpen_kernel_size_A=3,    # 16.07
+    sharpen_kernel_size_B=7,    # xform4b with top percent->55.51
+    sharpen_kernel_size_C=21,   # 4.18
+    sharpen_kernel_size_D=31,   # 53.08
 
     # XFORM5 = "Contrast"
     contrast_factor_A=1, brightness_factor_A=0,     # xform5a with top percent->77.31
