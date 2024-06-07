@@ -92,7 +92,7 @@ def apply_xform(gdrive_path, image_path, source_base, xform_prefix_list):
 # apply grayscale multiple times with varying intensity
 # image_path = '/content/gdrive/MyDrive/AIM/citizen_1864_rescan.jpg'
 
-def apply_grayscale(gdrive_path, image_path, source_base, xform_prefix, intensity_a=0.7, intensity_b=1.3, intensity_c=1.8):
+def apply_xform_grayscale(gdrive_path, image_path, source_base, xform_prefix, intensity_a=0.7, intensity_b=1.3, intensity_c=1.8):
     # read image
     img = mpimg.imread(image_path)
 
@@ -109,28 +109,26 @@ def apply_grayscale(gdrive_path, image_path, source_base, xform_prefix, intensit
     # result2 = cv2.multiply(grayscale(image), intensity_a)  # Slightly darker
     # result3 = cv2.multiply(grayscale(image), intensity_b)  # Slightly brighter
 
-    # Display images side-by-side
-    fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(15, 5))  # Adjust figsize if needed
-
-    axes[0].imshow(result1, cmap='gray')
-    axes[0].set_title('Grayscale 0')
     # cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform1a.jpg'), result1)
     cv2.imwrite(os.path.join(gdrive_path, source_base + xform_prefix + 'a.jpg'), result1)
 
-    axes[1].imshow(result2, cmap='gray')
-    axes[1].set_title('Grayscale 1 (Darker)')
+    # Display images side-by-side
+    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))  # Adjust figsize if needed
+
+    axes[0].imshow(result2, cmap='gray')
+    axes[0].set_title('Grayscale 1 (Darker)')
     # cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform1b.jpg'), result2)
     cv2.imwrite(os.path.join(gdrive_path, source_base + xform_prefix + 'b.jpg'), result2)
 
-    axes[2].imshow(result3, cmap='gray')
-    axes[2].set_title('Grayscale 2 (Brighter)')
+    axes[1].imshow(result3, cmap='gray')
+    axes[1].set_title('Grayscale 2 (Brighter)')
     # cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform1c.jpg'), result3)
     cv2.imwrite(os.path.join(gdrive_path, source_base + xform_prefix + 'c.jpg'), result3)
 
-    axes[3].imshow(result4, cmap='gray')
-    axes[3].set_title('Grayscale 3 (Brighter)')
+    axes[2].imshow(result4, cmap='gray')
+    axes[2].set_title('Grayscale 3 (Brighter)')
     # cv2.imwrite(os.path.join(gdrive_path, 'citizen_xform1d.jpg'), result3)
-    cv2.imwrite(os.path.join(gdrive_path, source_base + xform_prefix + 'd.jpg'), result3)
+    cv2.imwrite(os.path.join(gdrive_path, source_base + xform_prefix + 'd.jpg'), result4)
 
     plt.show()
 ###############################################################################
