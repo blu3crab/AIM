@@ -158,13 +158,13 @@ def OCR(image_path, pipeline, trim_length=1, order='yes', thresh=6):
     #print(f"ordered_preds_with_newline->{ordered_preds_with_newline}")
     return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, ordered_word_list
 ###############################################################################
-def predict(gdrive_path, transform_basename_list, pipeline):
+def predict(gdrive_path, transform_basename_list, pipeline, trim_length=1):
     for base_name in transform_basename_list:
         image_path = gdrive_path + base_name + ".jpg"
         img = mpimg.imread(image_path)
         plt.imshow(img)
         print(f"scanning {image_path}")
-        predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list = OCR(image_path, pipeline, order='yes', thresh=16)
+        predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list = OCR(image_path, pipeline, trim_length, order='yes', thresh=16)
         write_preds_fileset(predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list, gdrive_path, base_name)
 
     return predictions_raw, pred_sort_dist, ordered_word_string, ordered_word_string_with_newline, word_list
